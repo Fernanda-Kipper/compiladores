@@ -3,10 +3,10 @@ import java.io.*;
 enum TokenType{ NUM,SOMA, MULT,APar,FPar, EOF}
 
 class Token{
-  char lexema;
+  String lexema;
   TokenType token;
 
- Token (char l, TokenType t)
+ Token (String l, TokenType t)
  	{ lexema=l;token = t;}	
 
 }
@@ -14,6 +14,8 @@ class Token{
 class AnaliseLexica {
 
 	BufferedReader arquivo;
+
+	char nextChar;
 
 	AnaliseLexica(String a) throws Exception
 	{
@@ -30,34 +32,48 @@ class AnaliseLexica {
 		int currchar1;
 
 			do{
-				currchar1 =  arquivo.read();
-				currchar = (char) currchar1;
+				if((int) this.nextChar == 0) {
+					currchar1 = arquivo.read();
+					currchar =  (char) currchar1;
+				} else {
+					currchar = this.nextChar;
+					currchar1 = this.nextChar;
+				}
+				this.nextChar = (char) arquivo.read();
 			} while (currchar == '\n' || currchar == ' ' || currchar =='\t' || currchar == '\r');
-			
-			if(currchar1 != eof && currchar1 !=10)
+
+			if(currchar1 != eof && currchar1 !=10 && currchar != Character.MAX_VALUE)
 			{
-								
-	
 				if (currchar >= '0' && currchar <= '9')
-					return (new Token (currchar, TokenType.NUM));
+					if(this.nextChar >= '0' && this.nextChar <= '9') {
+						var oldNextChar = this.nextChar;
+						this.nextChar = (char) arquivo.read();
+						return (new Token("" + currchar + oldNextChar, TokenType.NUM));
+					}
+					else {
+						return (new Token("" + currchar, TokenType.NUM));
+					}
 				else
 					switch (currchar){
 						case '(':
-							return (new Token (currchar,TokenType.APar));
+							return (new Token ("" + currchar,TokenType.APar));
 						case ')':
-							return (new Token (currchar,TokenType.FPar));
+							return (new Token ("" + currchar,TokenType.FPar));
 						case '+':
-							return (new Token (currchar,TokenType.SOMA));
+							return (new Token ("" + currchar,TokenType.SOMA));
 						case '*':
-							return (new Token (currchar,TokenType.MULT));
+							return (new Token ("" + currchar,TokenType.MULT));
 						
-						default: throw (new Exception("Caractere inválido: " + ((int) currchar)));
+						default: {
+							System.out.println(currchar == ' ');
+							throw (new Exception("Caractere inválido: " + ((int) currchar)));
+						}
 					}
 			}
 
 			arquivo.close();
 			
-		return (new Token(currchar,TokenType.EOF));
+		return (new Token("" + currchar,TokenType.EOF));
 		
 	}
 }

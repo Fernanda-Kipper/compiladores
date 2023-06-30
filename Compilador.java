@@ -10,7 +10,6 @@ class Compilador{
 			Parser as = new Parser(al);
 		
 			arv = as.parseProg();
-		
 			
 			CodeGen backend = new CodeGen();
 			String codigo = backend.geraCodigo(arv);
