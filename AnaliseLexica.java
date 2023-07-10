@@ -1,6 +1,6 @@
 import java.io.*;
 
-enum TokenType{ NUM,SOMA, MULT,APar,FPar, EOF}
+enum TokenType{NUM, SOMA, MULT, APar, FPar, EOF, DIV, SUB}
 
 class Token{
   String lexema;
@@ -61,6 +61,10 @@ class AnaliseLexica {
 							return (new Token ("" + currchar,TokenType.FPar));
 						case '+':
 							return (new Token ("" + currchar,TokenType.SOMA));
+						case '-':
+							return (new Token ("" + currchar,TokenType.SUB));
+						case '/':
+							return (new Token ("" + currchar,TokenType.DIV));
 						case '*':
 							return (new Token ("" + currchar,TokenType.MULT));
 						

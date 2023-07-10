@@ -13,6 +13,7 @@ class Parser{
 
 		ArvoreSintatica resultado = Exp();
 		Token tokenCorrente = scanner.getNextToken();
+		System.out.println(tokenCorrente.lexema);
 		if(tokenCorrente.token != TokenType.EOF)
 					throw (new Exception("Estava esperando: EOF"));
 
@@ -65,11 +66,13 @@ class Parser{
 				return new Soma(null,null);
 			case MULT:
 				return new Mult(null,null);
+			case SUB:
+				return new Sub(null,null);
+			case DIV:
+				return new Div(null,null);
 			default: 
 		}
 		return null;
-			
-
 		}
 
 }
