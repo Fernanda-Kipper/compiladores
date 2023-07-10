@@ -1,0 +1,10 @@
+void main () {
+    newVar boolean a;
+    newVar integer b;
+    b = 2;
+    a = true;
+    while(a){
+        System.out(2 * b)
+        b = b + 1;
+    }
+}

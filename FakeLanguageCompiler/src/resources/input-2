@@ -1,0 +1,11 @@
+void main () {
+    newVar integer a;
+    newVar integer b;
+    a = 9;
+    b = 8;
+    soma(a, b);
+}
+
+integer soma(integer a, integer b){
+    return a + b;
+}
