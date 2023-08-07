@@ -2,95 +2,90 @@ PARSER_BEGIN(Karloff)
 import java.io.*;
 public class Karloff {
 
-  public static void main(String args[]) throws ParseException,IOException {
-    
- Karloff analisador = new Karloff(new FileInputStream(args[0]));
- analisador.Karloff();
-  }
+    public static void main(String args[]) throws ParseException, IOException {
 
+        Karloff analisador = new Karloff(new FileInputStream(args[0]));
+        analisador.Karloff();
+    }
 }
 
 PARSER_END(Karloff)
 
-SKIP :
+SKIP:
 {
-  " "
-| "\t"
-| "\n"
-| "\r"
+    " " | "\t" | "\n" | "\r"
 }
 
-TOKEN :
+TOKEN:
 {
-  <MAIN: "main">
-| <ACHAVES: "{">
-| <FCHAVES: "}">
-| <APAR: "(">
-| <FPAR: ")">
-| < BOOL: "bool" >
-| < INT: "integer" >
-| < PLUS : "+" >
-|< EQUALS: "==" >
-|< ATRIB: "=" >
-|< MINOR: "<" >
-|< MAJOR: ">" >
-|< MINUS :"-" >
-|< MUL: "*" >
-|< DIV: "/" >
-|< COMM: ",">
-|< DOTCOMM: ";">
-|< SYSOUT: "System.out">
-|< SYSREAD: "System.readint">
-|< RETURN: "return">
-|< REPEAT: "repeat">
-|< WHILE: "while">
-|< IF: "if">
-|< VAR: "newVar">
+    <MAIN: "main">
+    | <ACHAVES: "{">
+    | <FCHAVES: "}">
+    | <APAR: "(">
+    | <FPAR: ")">
+    | <ATRIB: "=">
+    | <DOTCOMM: ";">
+    | <COMM: ",">
+    | <PLUS: "+">
+    | <DIV: "/">
+    | <MINUS: "-">
+    | <MUL: "*">
+    | <BOOL: "bool">
+    | <INT: "integer">
+    | <SYSOUT: "System.out">
+    | <SYSREAD: "System.readint">
+    | <RETURN: "return">
+    | <REPEAT: "repeat">
+    | <WHILE: "while">
+    | <IF: "if">
+    | <VAR: "newVar">
+    | <EQUALS: "==">
+    | <MINOR: "<">
+    | <MAJOR: ">">
+    | <AND: "&">
+    | <OR: "|">
 }
 
-TOKEN :
+TOKEN:
 {
   <NUM : (["0"-"9"])+>
- |< ID: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9"])*>
-
+ |< ID: ["a"-"z","A"-"Z"] ( ["a"-"z","A"-"Z","0"-"9","_"])*>
 }
 
-
-void Karloff () :
-{Token t;}
+void Karloff():
 {
-
-(
-  <MAIN> { System.out.println("Palavra reservada: main");}
-| <ACHAVES> { System.out.println("Abre chaves: {");}
-| <FCHAVES> { System.out.println("Fecha chaves: }");}
-|<APAR> { System.out.println("Abre parenteses: (");}
-|<FPAR> { System.out.println("Fecha parenteses: )");}
-|<ATRIB> { System.out.println("Atribuição: =");}
-|<DOTCOMM> { System.out.println("Ponto e Vírgula: ;");}
-|<COMM> { System.out.println("Vírgula: ,");}
-|<PLUS> { System.out.println("Soma: +");}
-|<DIV> { System.out.println("Divisão: /");}
-|<MINUS> { System.out.println("Menos: -");}
-|<MUL> { System.out.println("Multiplicação: *");}
-| <BOOL> { System.out.println("Tipo booleano: bool");}
-| <INT> { System.out.println("Tipo inteiro: integer");}
-| t=<SYSOUT> { System.out.println("Palavra reservada: " + t.image);}
-| t=<VAR> { System.out.println("Palavra reservada: " + t.image);}
-| t=<SYSREAD> { System.out.println("Palavra reservada: " + t.image);}
-| t=<RETURN>{ System.out.println("Palavra reservada: " + t.image);}
-| t=<IF> { System.out.println("Palavra reservada: " + t.image);}
-| t=<WHILE> { System.out.println("Palavra reservada: " + t.image);}
-| t=<REPEAT> { System.out.println("Palavra reservada: " + t.image);}
-| t=<NUM> { System.out.println("Número: "+ t.image);}
-| t=<ID> { System.out.println("Identificador: "+ t.image);}
-)*
-<EOF> 
-
-
+    Token t;
 }
-
-
-
-
-
+{
+    (
+            <MAIN> { System.out.println("Palavra reservada: main"); }
+            | <ACHAVES> { System.out.println("Abre chaves: {"); }
+            | <FCHAVES> { System.out.println("Fecha chaves: }"); }
+            | <APAR> { System.out.println("Abre parenteses: ("); }
+            | <FPAR> { System.out.println("Fecha parenteses: )"); }
+            | <ATRIB> { System.out.println("Atribuição: ="); }
+            | <DOTCOMM> { System.out.println("Ponto e Vírgula: ;"); }
+            | <COMM> { System.out.println("Vírgula: ,"); }
+            | <PLUS> { System.out.println("Soma: +"); }
+            | <DIV> { System.out.println("Divisão: /"); }
+            | <MINUS> { System.out.println("Menos: -"); }
+            | <MUL> { System.out.println("Multiplicação: *"); }
+            | <BOOL> { System.out.println("Tipo booleano: bool"); }
+            | <INT> { System.out.println("Tipo inteiro: integer"); }
+            | t = <SYSOUT> { System.out.println("Palavra reservada: " + t.image); }
+            | t = <VAR> { System.out.println("Palavra reservada: " + t.image); }
+            | t = <SYSREAD> { System.out.println("Palavra reservada: " + t.image); }
+            | t = <RETURN> { System.out.println("Palavra reservada: " + t.image); }
+            | t = <IF> { System.out.println("Palavra reservada: " + t.image); }
+            | t = <WHILE> { System.out.println("Palavra reservada: " + t.image); }
+            | t = <REPEAT> { System.out.println("Palavra reservada: " + t.image); }
+            | t = <NUM> { System.out.println("Número: " + t.image); }
+            | t = <ID> { System.out.println("Identificador: " + t.image); }
+            | <EQUALS> { System.out.println("Operador de igualdade: =="); }
+            | <MINOR> { System.out.println("Operador menor: <"); }
+            | <MAJOR> { System.out.println("Operador maior: >"); }
+            | <AND> { System.out.println("Operador lógico AND: &"); }
+            | <OR> { System.out.println("Operador lógico OR: |"); }
+    )*
+    <EOF>
+}
