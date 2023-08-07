@@ -1,0 +1,195 @@
+PARSER_BEGIN(KarloffParser)
+import java.io.*;
+
+public class KarloffParser {
+
+  public static void main(String args[]) throws ParseException, IOException {
+    KarloffParser parser = new KarloffParser(new FileInputStream(args[0]));
+    parser.Karloff();
+  }
+
+}
+
+PARSER_END(KarloffParser)
+
+SKIP:
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+}
+
+TOKEN:
+{
+  <MAIN: "main">
+| <ACHAVES: "{">
+| <FCHAVES: "}">
+| <APAR: "(">
+| <FPAR: ")">
+| <BOOL: "bool">
+| <INT: "integer">
+| <PLUS: "+">
+| <MINUS: "-">
+| <EQUALS: "==">
+| <ATRIB: "=">
+| <MINOR: "<">
+| <MINOR_EQ: "<=">
+| <MAJOR: ">">
+| <MAJOR_EQ: ">=">
+| <AND: "&">
+| <OR: "|">
+| <MUL: "*">
+| <DIV: "/">
+| <COMM: ",">
+| <DOTCOMM: ";">
+| <SYSOUT: "System.output">
+| <SYSREAD: "System.readint">
+| <RETURN: "return">
+| <REPEAT: "repeat">
+| <WHILE: "while">
+| <IF: "if">
+| <VAR: "newVar">
+}
+
+TOKEN:
+{
+  <NUM: (["0"-"9"])+>
+  | <ID: ["a"-"z", "A"-"Z"] (["a"-"z", "A"-"Z", "0"-"9", "_"])*>
+}
+
+void Karloff():
+{}
+{
+  MainFunc()
+}
+
+void MainFunc():
+{}
+{
+  <MAIN> <APAR> <FPAR> <ACHAVES>
+  VarDecl()
+  Statement()
+  <FCHAVES>
+}
+
+void VarDecl():
+{}
+{
+  (<VAR> Type() <ID> <DOTCOMM> VarDecl())?
+}
+
+void Type():
+{}
+{
+  <INT> | <BOOL>
+}
+
+void Statement():
+{}
+{
+  (Assignment() | PrintStatement() | IfStatement() | WhileStatement() | RepeatStatement() | ReturnStatement() | ReadStatement())
+  <DOTCOMM>
+}
+
+void Assignment():
+{}
+{
+  <ID> <ATRIB> Expression()
+}
+
+void PrintStatement():
+{}
+{
+  <SYSOUT> <APAR> Expression() <FPAR>
+}
+
+void IfStatement():
+{}
+{
+  <IF> <APAR> Expression() <FPAR> <ACHAVES>
+  Statement()
+  <FCHAVES>
+}
+
+void WhileStatement():
+{}
+{
+  <WHILE> <APAR> Expression() <FPAR> <ACHAVES>
+  Statement()
+  <FCHAVES>
+}
+
+void RepeatStatement():
+{}
+{
+  <REPEAT> <ACHAVES>
+  Statement()
+  <FCHAVES> <WHILE> <APAR> Expression() <FPAR>
+}
+
+void ReturnStatement():
+{}
+{
+  <RETURN> Expression()
+}
+
+void ReadStatement():
+{}
+{
+  <ID> <ATRIB> <SYSREAD> <APAR> <FPAR>
+}
+
+void Expression():
+{}
+{
+  OrExpr()
+}
+
+void OrExpr():
+{}
+{
+  AndExpr() (<OR> AndExpr())*
+}
+
+void AndExpr():
+{}
+{
+  RelExpr() (<AND> RelExpr())*
+}
+
+void RelExpr():
+{}
+{
+  AddExpr() (
+    <EQUALS> AddExpr()
+    | <MINOR> AddExpr()
+    | <MINOR_EQ> AddExpr()
+    | <MAJOR> AddExpr()
+    | <MAJOR_EQ> AddExpr()
+  )?
+}
+
+void AddExpr():
+{}
+{
+  MulExpr() (<PLUS> MulExpr())*
+}
+
+void MulExpr():
+{}
+{
+  UnaryExpr() (<MUL> UnaryExpr())*
+}
+
+void UnaryExpr():
+{}
+{
+  (<PLUS> | <MINUS>) UnaryExpr() | PrimaryExpr()
+}
+
+void PrimaryExpr():
+{}
+{
+  <NUM> | <ID> | <APAR> Expression() <FPAR>
+}
