@@ -14,10 +14,3 @@ javac KarloffParser.java
 ```bash
 java KarloffParser resources/input-1.kar
 ```
-
-READ Statement
-void ReadStatement():
-{}
-{
-  <ID> <ATRIB> <SYSREAD> <APAR> <FPAR>
-}
