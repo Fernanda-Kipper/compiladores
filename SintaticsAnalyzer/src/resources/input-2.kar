@@ -2,8 +2,6 @@ void main () {
     newVar integer num;
     num = 5;
     if (num > 0) {
-        System.output("Positive");
-    } else {
-        System.output("Non-positive");
-    }
+      System.output(true);
+    };
 }

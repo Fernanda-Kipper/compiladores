@@ -29,6 +29,8 @@ TOKEN:
 | <FPAR: ")">
 | <BOOL: "bool">
 | <INT: "integer">
+| <VOID: "void">
+| <FUNC: "func">
 | <PLUS: "+">
 | <MINUS: "-">
 | <EQUALS: "==">
@@ -50,6 +52,8 @@ TOKEN:
 | <WHILE: "while">
 | <IF: "if">
 | <VAR: "newVar">
+| <TRUE: "true">
+| <FALSE: "false">
 }
 
 TOKEN:
@@ -62,15 +66,37 @@ void Karloff():
 {}
 {
   MainFunc()
+  (Func())*
 }
 
 void MainFunc():
 {}
 {
-  <MAIN> <APAR> <FPAR> <ACHAVES>
+  Type() <MAIN> <APAR> <FPAR> <ACHAVES>
   VarDecl()
-  Statement()
+  (Statement())*
   <FCHAVES>
+}
+
+void Func():
+{}
+{
+  <FUNC> Type() <ID> <APAR> (ArgList())? <FPAR> <ACHAVES>
+  VarDecl()
+  (Statement())*
+  <FCHAVES>
+}
+
+void ArgList():
+{}
+{
+  Type() <ID> (ArgListRecursion())*
+}
+
+void ArgListRecursion():
+{}
+{
+  <COMM> Type() <ID> ArgListRecursion()
 }
 
 void VarDecl():
@@ -82,13 +108,13 @@ void VarDecl():
 void Type():
 {}
 {
-  <INT> | <BOOL>
+  <INT> | <BOOL> | <VOID>
 }
 
 void Statement():
 {}
 {
-  (Assignment() | PrintStatement() | IfStatement() | WhileStatement() | RepeatStatement() | ReturnStatement() | ReadStatement())
+  (Assignment() | PrintStatement() | IfStatement() | WhileStatement() | RepeatStatement() | ReturnStatement())
   <DOTCOMM>
 }
 
@@ -134,30 +160,6 @@ void ReturnStatement():
   <RETURN> Expression()
 }
 
-void ReadStatement():
-{}
-{
-  <ID> <ATRIB> <SYSREAD> <APAR> <FPAR>
-}
-
-void Expression():
-{}
-{
-  OrExpr()
-}
-
-void OrExpr():
-{}
-{
-  AndExpr() (<OR> AndExpr())*
-}
-
-void AndExpr():
-{}
-{
-  RelExpr() (<AND> RelExpr())*
-}
-
 void RelExpr():
 {}
 {
@@ -188,8 +190,26 @@ void UnaryExpr():
   (<PLUS> | <MINUS>) UnaryExpr() | PrimaryExpr()
 }
 
+void Expression():
+{}
+{
+  OrExpr()
+}
+
+void OrExpr():
+{}
+{
+  AndExpr() (<OR> AndExpr())*
+}
+
+void AndExpr():
+{}
+{
+  RelExpr() (<AND> RelExpr())*
+}
+
 void PrimaryExpr():
 {}
 {
-  <NUM> | <ID> | <APAR> Expression() <FPAR>
+  <NUM> | <ID> | <TRUE> | <FALSE> | <APAR> Expression() <FPAR>
 }

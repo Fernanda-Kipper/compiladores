@@ -1,17 +1,15 @@
-bool isEven(integer num) {
-    if (num % 2 == 0) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
 void main () {
+    newVar bool isGreaterThanTwo;
     newVar integer num;
     num = 6;
-    if (isEven(num)) {
-        System.output("Even");
-    } else {
-        System.output("Odd");
-    }
+    isGreaterThanTwo = num > 2;
+    if (isGreaterThanTwo) {
+        System.output(true);
+    };
+}
+
+func integer double(integer n){
+    newVar integer result;
+    result = num + num;
+    return result;
 }

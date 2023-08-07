@@ -1,8 +1,0 @@
-void main () {
-    newVar integer num;
-    num = 1;
-    while (num <= 10) {
-        System.output(num);
-        num = num + 1;
-    }
-}
