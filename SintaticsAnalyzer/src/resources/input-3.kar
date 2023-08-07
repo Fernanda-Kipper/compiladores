@@ -3,9 +3,10 @@ void main () {
     newVar integer num;
     num = 6;
     isGreaterThanTwo = num > 2;
-    if (isGreaterThanTwo) {
-        System.output(true);
-    };
+    repeat {
+        num = num + 1;
+        System.output(num);
+    } until (num > 10);
 }
 
 func integer double(integer n){

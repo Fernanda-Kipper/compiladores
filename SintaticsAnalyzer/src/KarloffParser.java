@@ -226,9 +226,26 @@ public class KarloffParser implements KarloffParserConstants {
   static final public void RepeatStatement() throws ParseException {
     jj_consume_token(REPEAT);
     jj_consume_token(ACHAVES);
-    Statement();
+    label_5:
+    while (true) {
+      Statement();
+      switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
+      case SYSOUT:
+      case RETURN:
+      case REPEAT:
+      case WHILE:
+      case IF:
+      case ID:{
+        ;
+        break;
+        }
+      default:
+        jj_la1[8] = jj_gen;
+        break label_5;
+      }
+    }
     jj_consume_token(FCHAVES);
-    jj_consume_token(WHILE);
+    jj_consume_token(UNTIL);
     jj_consume_token(APAR);
     Expression();
     jj_consume_token(FPAR);
@@ -274,21 +291,21 @@ public class KarloffParser implements KarloffParserConstants {
         break;
         }
       default:
-        jj_la1[8] = jj_gen;
+        jj_la1[9] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       break;
       }
     default:
-      jj_la1[9] = jj_gen;
+      jj_la1[10] = jj_gen;
       ;
     }
 }
 
   static final public void AddExpr() throws ParseException {
     MulExpr();
-    label_5:
+    label_6:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case PLUS:{
@@ -296,8 +313,8 @@ public class KarloffParser implements KarloffParserConstants {
         break;
         }
       default:
-        jj_la1[10] = jj_gen;
-        break label_5;
+        jj_la1[11] = jj_gen;
+        break label_6;
       }
       jj_consume_token(PLUS);
       MulExpr();
@@ -306,7 +323,7 @@ public class KarloffParser implements KarloffParserConstants {
 
   static final public void MulExpr() throws ParseException {
     UnaryExpr();
-    label_6:
+    label_7:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case MUL:{
@@ -314,8 +331,8 @@ public class KarloffParser implements KarloffParserConstants {
         break;
         }
       default:
-        jj_la1[11] = jj_gen;
-        break label_6;
+        jj_la1[12] = jj_gen;
+        break label_7;
       }
       jj_consume_token(MUL);
       UnaryExpr();
@@ -336,7 +353,7 @@ public class KarloffParser implements KarloffParserConstants {
         break;
         }
       default:
-        jj_la1[12] = jj_gen;
+        jj_la1[13] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -352,7 +369,7 @@ public class KarloffParser implements KarloffParserConstants {
       break;
       }
     default:
-      jj_la1[13] = jj_gen;
+      jj_la1[14] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -364,7 +381,7 @@ public class KarloffParser implements KarloffParserConstants {
 
   static final public void OrExpr() throws ParseException {
     AndExpr();
-    label_7:
+    label_8:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case OR:{
@@ -372,8 +389,8 @@ public class KarloffParser implements KarloffParserConstants {
         break;
         }
       default:
-        jj_la1[14] = jj_gen;
-        break label_7;
+        jj_la1[15] = jj_gen;
+        break label_8;
       }
       jj_consume_token(OR);
       AndExpr();
@@ -382,7 +399,7 @@ public class KarloffParser implements KarloffParserConstants {
 
   static final public void AndExpr() throws ParseException {
     RelExpr();
-    label_8:
+    label_9:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
       case AND:{
@@ -390,8 +407,8 @@ public class KarloffParser implements KarloffParserConstants {
         break;
         }
       default:
-        jj_la1[15] = jj_gen;
-        break label_8;
+        jj_la1[16] = jj_gen;
+        break label_9;
       }
       jj_consume_token(AND);
       RelExpr();
@@ -423,7 +440,7 @@ public class KarloffParser implements KarloffParserConstants {
       break;
       }
     default:
-      jj_la1[16] = jj_gen;
+      jj_la1[17] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -439,7 +456,7 @@ public class KarloffParser implements KarloffParserConstants {
   static public Token jj_nt;
   static private int jj_ntk;
   static private int jj_gen;
-  static final private int[] jj_la1 = new int[17];
+  static final private int[] jj_la1 = new int[18];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static {
@@ -447,10 +464,10 @@ public class KarloffParser implements KarloffParserConstants {
 	   jj_la1_init_1();
 	}
 	private static void jj_la1_init_0() {
-	   jj_la1_0 = new int[] {0x2000,0xd0000000,0x1c00,0xd0000000,0x4000000,0x0,0x1c00,0xd0000000,0x3d0000,0x3d0000,0x4000,0x1000000,0xc000,0xc100,0x800000,0x400000,0x100,};
+	   jj_la1_0 = new int[] {0x2000,0xd0000000,0x1c00,0xd0000000,0x4000000,0x0,0x1c00,0xd0000000,0xd0000000,0x3d0000,0x3d0000,0x4000,0x1000000,0xc000,0xc100,0x800000,0x400000,0x100,};
 	}
 	private static void jj_la1_init_1() {
-	   jj_la1_1 = new int[] {0x0,0x43,0x0,0x43,0x0,0x4,0x0,0x43,0x0,0x0,0x0,0x0,0x0,0x78,0x0,0x0,0x78,};
+	   jj_la1_1 = new int[] {0x0,0x86,0x0,0x86,0x0,0x8,0x0,0x86,0x86,0x0,0x0,0x0,0x0,0x0,0xf0,0x0,0x0,0xf0,};
 	}
 
   /** Constructor with InputStream. */
@@ -471,7 +488,7 @@ public class KarloffParser implements KarloffParserConstants {
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 17; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 18; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -485,7 +502,7 @@ public class KarloffParser implements KarloffParserConstants {
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 17; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 18; i++) jj_la1[i] = -1;
   }
 
   /** Constructor. */
@@ -502,7 +519,7 @@ public class KarloffParser implements KarloffParserConstants {
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 17; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 18; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -520,7 +537,7 @@ public class KarloffParser implements KarloffParserConstants {
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 17; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 18; i++) jj_la1[i] = -1;
   }
 
   /** Constructor with generated Token Manager. */
@@ -536,7 +553,7 @@ public class KarloffParser implements KarloffParserConstants {
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 17; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 18; i++) jj_la1[i] = -1;
   }
 
   /** Reinitialise. */
@@ -545,7 +562,7 @@ public class KarloffParser implements KarloffParserConstants {
 	 token = new Token();
 	 jj_ntk = -1;
 	 jj_gen = 0;
-	 for (int i = 0; i < 17; i++) jj_la1[i] = -1;
+	 for (int i = 0; i < 18; i++) jj_la1[i] = -1;
   }
 
   static private Token jj_consume_token(int kind) throws ParseException {
@@ -596,12 +613,12 @@ public class KarloffParser implements KarloffParserConstants {
   /** Generate ParseException. */
   static public ParseException generateParseException() {
 	 jj_expentries.clear();
-	 boolean[] la1tokens = new boolean[39];
+	 boolean[] la1tokens = new boolean[40];
 	 if (jj_kind >= 0) {
 	   la1tokens[jj_kind] = true;
 	   jj_kind = -1;
 	 }
-	 for (int i = 0; i < 17; i++) {
+	 for (int i = 0; i < 18; i++) {
 	   if (jj_la1[i] == jj_gen) {
 		 for (int j = 0; j < 32; j++) {
 		   if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -613,7 +630,7 @@ public class KarloffParser implements KarloffParserConstants {
 		 }
 	   }
 	 }
-	 for (int i = 0; i < 39; i++) {
+	 for (int i = 0; i < 40; i++) {
 	   if (la1tokens[i]) {
 		 jj_expentry = new int[1];
 		 jj_expentry[0] = i;

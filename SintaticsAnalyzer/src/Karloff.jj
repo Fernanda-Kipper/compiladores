@@ -49,6 +49,7 @@ TOKEN:
 | <SYSREAD: "System.readint">
 | <RETURN: "return">
 | <REPEAT: "repeat">
+| <UNTIL: "until">
 | <WHILE: "while">
 | <IF: "if">
 | <VAR: "newVar">
@@ -150,8 +151,8 @@ void RepeatStatement():
 {}
 {
   <REPEAT> <ACHAVES>
-  Statement()
-  <FCHAVES> <WHILE> <APAR> Expression() <FPAR>
+  (Statement())+
+  <FCHAVES> <UNTIL> <APAR> Expression() <FPAR>
 }
 
 void ReturnStatement():

@@ -63,19 +63,21 @@ public interface KarloffParserConstants {
   /** RegularExpression Id. */
   int REPEAT = 31;
   /** RegularExpression Id. */
-  int WHILE = 32;
+  int UNTIL = 32;
   /** RegularExpression Id. */
-  int IF = 33;
+  int WHILE = 33;
   /** RegularExpression Id. */
-  int VAR = 34;
+  int IF = 34;
   /** RegularExpression Id. */
-  int TRUE = 35;
+  int VAR = 35;
   /** RegularExpression Id. */
-  int FALSE = 36;
+  int TRUE = 36;
   /** RegularExpression Id. */
-  int NUM = 37;
+  int FALSE = 37;
   /** RegularExpression Id. */
-  int ID = 38;
+  int NUM = 38;
+  /** RegularExpression Id. */
+  int ID = 39;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -114,6 +116,7 @@ public interface KarloffParserConstants {
     "\"System.readint\"",
     "\"return\"",
     "\"repeat\"",
+    "\"until\"",
     "\"while\"",
     "\"if\"",
     "\"newVar\"",
