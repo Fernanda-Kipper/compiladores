@@ -1,5 +1,16 @@
 void main () {
-    newVar integer teste;
-    teste = 9;
-    System.output (teste);
+    newVar bool isGreaterThanTwo;
+    newVar integer num;
+    num = 6;
+    isGreaterThanTwo = num > 2;
+    repeat {
+        num = num + 1;
+        System.output(num);
+    } until (num > 10);
+}
+
+func integer double(integer n){
+    newVar integer result;
+    result = num + num;
+    return result;
 }
