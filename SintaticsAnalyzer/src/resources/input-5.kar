@@ -1,0 +1,17 @@
+bool isEven(integer num) {
+    if (num % 2 == 0) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void main () {
+    newVar integer num;
+    num = 6;
+    if (isEven(num)) {
+        System.output("Even");
+    } else {
+        System.output("Odd");
+    }
+}

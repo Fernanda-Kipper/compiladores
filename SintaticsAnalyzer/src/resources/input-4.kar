@@ -1,0 +1,8 @@
+void main () {
+    newVar integer num;
+    num = 1;
+    repeat {
+        System.output(num);
+        num = num + 1;
+    } until (num > 10);
+}

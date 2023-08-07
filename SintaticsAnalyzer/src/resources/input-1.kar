@@ -1,0 +1,8 @@
+void main () {
+    newVar integer num;
+    newVar bool flag;
+    num = 10;
+    flag = true;
+    System.output(num);
+    System.output(flag);
+}
