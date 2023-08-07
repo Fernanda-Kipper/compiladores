@@ -1,0 +1,9 @@
+void main () {
+    newVar integer big_number;
+    big_number = 10000;
+    System.output (big_number);
+
+    newVar integer another_number;
+    another_number = 42000;
+    System.output (another_number);
+}
