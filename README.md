@@ -24,5 +24,19 @@ Dentro de cada pasta (`LexicalAnalyzer`, `Parser`, `DidaticCompiler`), há um RE
 
 ## Contribuições 🚀
 
-Sinta-se à vontade para explorar o código-fonte, aprender sobre análise léxica e sintática, e fazer quaisquer melhorias ou ajustes necessários. Se tiver dúvidas ou quiser contribuir para o projeto, não hesite em entrar em contato com os colaboradores!
+Sinta-se à vontade para explorar o código-fonte, aprender sobre análise léxica e sintática, e fazer quaisquer melhorias ou ajustes necessários. Se tiver dúvidas não hesite em entrar em contato com os colaboradores!
 
+Caso deseje quiser contribuir para o projeto, aqui está o passo-a-passo
+
+1. Faça o fork do projeto
+2. Realize suas alterações
+3. Quando estiver pronto, abra uma pull-request para nosso repositório
+4. Lembre-se de seguir as convenções de [commit](https://www.conventionalcommits.org/en/v1.0.0/) e branchs para manter o projeto organizado 😊
+
+
+### Materiais úteis 📚
+
+1. [Etapas do Compilador - IBM](https://www.ibm.com/docs/pt-br/openxl-c-and-cpp-aix/17.1.1?topic=cc-compiler-phases)
+1. [Estrutura de um Compilador](https://johnidm.gitbooks.io/compiladores-para-humanos/content/part1/structure-of-a-compiler.html)
+3. [Como realizar convenção de commits](https://blog.rocketseat.com.br/como-fazer-um-commit-conventional-commits/)
+4. [Como realizar convenção de branchs](https://dev.to/varbsan/a-simplified-convention-for-naming-branches-and-commits-in-git-il4)
