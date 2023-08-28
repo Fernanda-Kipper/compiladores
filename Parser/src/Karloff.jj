@@ -1,4 +1,29 @@
 PARSER_BEGIN(KarloffParser)
+
+
+class KarloffA{
+
+  Main main;
+  ArrayList<Func> functions;
+
+  KarloffA(Main main, Func, functions){
+    this.main = main;
+    this.functions = functions;
+  }
+}
+
+class Main{
+
+  ArrayList<Command> commands;
+  ArrayList<DeclVar> vars;
+
+  KarloffA(ArrayList<Command> commands, ArrayList<DeclVar> declVars){
+    this.commands = commands;
+    this.vars = vars;
+  }
+
+}
+
 import java.io.*;
 
 public class KarloffParser {
@@ -64,19 +89,29 @@ TOKEN:
 }
 
 void Karloff():
-{}
 {
-  MainFunc()
-  (Func())*
+  ArrayList<Func> func = new ArrayList<Func>();
+  Main main = null;  
+}
+{
+  main = MainFunc()
+  (Func(func))*
+
+  {return new KarloffA(main,func);}
 }
 
 void MainFunc():
-{}
+{
+  ArrayList<VarDecl> vars = new ArrayList<VarDecl>(); 
+  ArrayList<Comando> commands = new ArrayList<Command>();
+}
 {
   Type() <MAIN> <APAR> <FPAR> <ACHAVES>
-  VarDecl()
-  (Statement())*
+  VarDecl(vars)
+  (c=Statement() {commands.add(c);})*
   <FCHAVES>
+
+  {return new Main(vars,commands);}
 }
 
 void Func():
@@ -100,10 +135,10 @@ void ArgListRecursion():
   <COMM> Type() <ID> ArgListRecursion()
 }
 
-void VarDecl():
+void VarDecl(ArrayList<VarDecl> vars):
 {}
 {
-  (<VAR> Type() <ID> <DOTCOMM> VarDecl())?
+  (var = <VAR> Type() <ID> <DOTCOMM> VarDecl(vars) {vars.add(var)})?
 }
 
 void Type():
@@ -119,7 +154,7 @@ void Statement():
   <DOTCOMM>
 }
 
-void Assignment():
+void Assignment(AarrayList commands):
 {}
 {
   <ID> <ATRIB> Expression()
