@@ -1,12 +1,12 @@
 PARSER_BEGIN(KarloffParser)
-
+import java.io.*;
 
 class KarloffA{
 
   Main main;
   ArrayList<Func> functions;
 
-  KarloffA(Main main, Func, functions){
+  KarloffA(Main main, ArrayList<Func> functions){
     this.main = main;
     this.functions = functions;
   }
@@ -23,8 +23,6 @@ class Main{
   }
 
 }
-
-import java.io.*;
 
 public class KarloffParser {
 
@@ -136,15 +134,20 @@ void ArgListRecursion():
 }
 
 void VarDecl(ArrayList<VarDecl> vars):
-{}
 {
-  (var = <VAR> Type() <ID> <DOTCOMM> VarDecl(vars) {vars.add(var)})?
+  Token id=null;
+  String typo=null;
+}
+{
+  (<VAR> typo=Type() id=<ID> <DOTCOMM>{vars.add(new VarDecl(typo,id.image))})*
 }
 
-void Type():
-{}
+String Type():
+{Token tipo = null;}
 {
-  <INT> | <BOOL> | <VOID>
+  tipo=<INT> | tipo=<BOOL> | tipo=<VOID>
+
+  {return tipo.image;}
 }
 
 void Statement():
@@ -154,7 +157,7 @@ void Statement():
   <DOTCOMM>
 }
 
-void Assignment(AarrayList commands):
+void Assignment():
 {}
 {
   <ID> <ATRIB> Expression()
