@@ -1,34 +1,200 @@
 PARSER_BEGIN(KarloffParser)
 import java.io.*;
 
-class KarloffA{
-
-  Main main;
-  ArrayList<Func> functions;
-
-  KarloffA(Main main, ArrayList<Func> functions){
-    this.main = main;
-    this.functions = functions;
-  }
-}
-
 class Main{
 
   ArrayList<Command> commands;
   ArrayList<DeclVar> vars;
 
-  KarloffA(ArrayList<Command> commands, ArrayList<DeclVar> declVars){
+  Main(ArrayList<Command> commands, ArrayList<DeclVar> declVars){
     this.commands = commands;
     this.vars = vars;
   }
+}
 
+class VarDecl {
+  String typo;
+  Token id;
+
+  VarDecl(String typo, Token id){
+    this.typo = typo;
+    this.id = id;
+  }
+}
+
+class Command {}
+
+class Atrib extends Command {
+  Token id;
+  Exp exp;
+
+  Atrib(Token id, Exp exp){
+    this.id = id;
+    this.exp = exp;
+  }
+
+  public String toString() {
+    return this.id + " = " + this.exp.toString() + ";\n";
+  }
+}
+
+class PrintStatement extends Command {
+  Exp exp;
+
+  Print(Exp exp){
+    this.exp = exp;
+  }
+}
+
+class IfStatement extends Command {
+  Exp exp;
+  ArrayList<Command> commands;
+
+  IfStatement(Exp exp, ArrayList<Command> command){
+    this.exp = exp;
+    this.command = command;
+  }
+}
+
+class WhileStatement extends Command {
+  Exp exp;
+  ArrayList<Command> commands;
+
+  WhileStatement(Exp exp, ArrayList<Command> command){
+    this.exp = exp;
+    this.command = command;
+  }
+}
+
+//TODO: PERGUNTAR SE É ASSIM
+class RepeatStatement extends Command {
+  Exp exp;
+  ArrayList<Command> commands;
+
+  RepeatStatement(Exp exp, ArrayList<Command> command){
+    this.exp = exp;
+    this.command = command;
+  }
+}
+
+class ReturnStatement extends Command {
+  Exp exp;
+
+  ReturnStatement(Exp exp){
+    this.exp = exp;
+  }
+}
+
+class Exp {}
+
+class BooleanExp extends Exp {
+  boolean value;
+
+  BooleanExp(boolean value){
+    this.value = value;
+  }
+}
+
+class IntExp extends Exp {
+  int value;
+
+  IntExp(int value){
+    this.value = value;
+  }
+}
+
+class Operator {}
+
+class Sum extends Operator {
+  String op = "+";
+
+  public String toString() {
+    return this.op;
+  }
+}
+
+class Sub extends Operator {
+  String op = "-";
+
+  public String toString() {
+    return this.op;
+  }
+}
+
+class Mult extends Operator {
+  String op = "*";
+
+  public String toString() {
+    return this.op;
+  }
+}
+
+class Div extends Operator {
+  String op = "/";
+
+  public String toString() {
+    return this.op;
+  }
+}
+
+class And extends Operator {
+  String op = "&&";
+
+  public String toString() {
+    return this.op;
+  }
+}
+
+class Or extends Operator {
+  String op = "||";
+
+  public String toString() {
+    return this.op;
+  }
+}
+
+class Bigger extends Operator {
+  String op = ">";
+
+  public String toString() {
+    return this.op;
+  }
+}
+
+class Smaller extends Operator {
+  String op = "<";
+
+  public String toString() {
+    return this.op;
+  }
+}
+
+class Compare extends Operator {
+  String op = "==";
+
+  public String toString() {
+    return this.op;
+  }
+}
+
+
+class KarloffTree {
+
+  Main main;
+  ArrayList<Func> functions;
+
+  KarloffTree(Main main, ArrayList<Func> functions){
+    this.main = main;
+    this.functions = functions;
+  }
 }
 
 public class KarloffParser {
 
   public static void main(String args[]) throws ParseException, IOException {
     KarloffParser parser = new KarloffParser(new FileInputStream(args[0]));
-    parser.Karloff();
+    KarloffTree tree = parser.Karloff();
+    print(tree);
   }
 
 }
@@ -88,20 +254,20 @@ TOKEN:
 
 void Karloff():
 {
-  ArrayList<Func> func = new ArrayList<Func>();
   Main main = null;  
+  ArrayList<Func> func = new ArrayList<Func>();
 }
 {
   main = MainFunc()
   (Func(func))*
 
-  {return new KarloffA(main,func);}
+  {return new KarloffTree(main,func);}
 }
 
 void MainFunc():
 {
   ArrayList<VarDecl> vars = new ArrayList<VarDecl>(); 
-  ArrayList<Comando> commands = new ArrayList<Command>();
+  ArrayList<Command> commands = new ArrayList<Command>();
 }
 {
   Type() <MAIN> <APAR> <FPAR> <ACHAVES>
@@ -139,7 +305,7 @@ void VarDecl(ArrayList<VarDecl> vars):
   String typo=null;
 }
 {
-  (<VAR> typo=Type() id=<ID> <DOTCOMM>{vars.add(new VarDecl(typo,id.image))})*
+  (<VAR> typo=Type() id=<ID> <DOTCOMM>{vars.add(new VarDecl(typo,id.image));})*
 }
 
 String Type():
@@ -150,41 +316,42 @@ String Type():
   {return tipo.image;}
 }
 
-void Statement():
+void Statement(ArrayList<Command> commands):
 {}
 {
-  (Assignment() | PrintStatement() | IfStatement() | WhileStatement() | RepeatStatement() | ReturnStatement())
+  (Assignment(commands) | PrintStatement(commands) | IfStatement(commands) | WhileStatement(commands) | RepeatStatement(commands) | ReturnStatement(commands))
   <DOTCOMM>
 }
 
-void Assignment():
+void Assignment(ArrayList<Command> commands):
 {}
 {
-  <ID> <ATRIB> Expression()
+  id=<ID> <ATRIB> e=Expression() {commands.add(new Atrib(id,e));} 
 }
 
-void PrintStatement():
+void PrintStatement(ArrayList<Command> commands):
 {}
 {
-  <SYSOUT> <APAR> Expression() <FPAR>
+  <SYSOUT> <APAR> e=Expression() {commands.add(new PrintStatement(e));} <FPAR>
 }
 
-void IfStatement():
+void IfStatement(ArrayList<Command> commands):
 {}
 {
-  <IF> <APAR> Expression() <FPAR> <ACHAVES>
-  Statement()
+  <IF> <APAR> e=Expression() {commands.add(new PrintStatement(e));} <FPAR> <ACHAVES>
+  (Statement())+
   <FCHAVES>
 }
 
-void WhileStatement():
+void WhileStatement(ArrayList<Command> commands):
 {}
 {
-  <WHILE> <APAR> Expression() <FPAR> <ACHAVES>
-  Statement()
+  <WHILE> <APAR> e=Expression() {commands.add(new PrintStatement(e));} <FPAR> <ACHAVES>
+  (Statement())+
   <FCHAVES>
 }
 
+// TODO: TIRAR DUVIDA DE COMO FAZER ESSE
 void RepeatStatement():
 {}
 {
