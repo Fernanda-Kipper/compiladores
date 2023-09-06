@@ -12,6 +12,24 @@ class Main{
     this.commands = commands;
     this.vars = vars;
   }
+
+  public String toString() {
+    String bodyMain = "function main(){\n";
+    
+    for (Variable var : this.vars) {
+      bodyMain = bodyMain.concat("let " + var.toString() + ";\n");
+    }
+
+    for (Command command : this.commands) {
+      bodyMain = bodyMain.concat(command.toString());
+    }
+    
+    if (!bodyMain.endsWith("\n")){
+      bodyMain = bodyMain + "\n";
+    }
+
+    return bodyMain + "}\n";
+  }
 }
 
 class FunctionDecl{
@@ -23,6 +41,36 @@ class FunctionDecl{
     this.commands = commands;
     this.vars = vars;
     this.parameters = parameters;
+  }
+
+  public String toString() {
+    String bodyFun = "function " + this.nome + "(";
+
+    if (!this.parameters.isEmpty()) {
+      
+      Parameter first = this.parameters.remove(0);
+      bodyFun = bodyFun.concat(first.toString());
+      
+      for (Parameter parameter : this.parameters) {
+        bodyFun = bodyFun.concat("," + parameter.toString());
+      }
+    }
+
+    bodyFun = bodyFun.concat(") {\n");
+
+    for (Variable var : this.vars) {
+      bodyFun = bodyFun.concat("let " + var.toString() + ";\n");
+    }
+
+    for (Command command : this.commands) {
+      bodyFun = bodyFun.concat(command.toString());
+    }
+
+    if (!bodyFun.endsWith("\n")){
+      bodyFun = bodyFun + "\n";
+    }
+    
+    return bodyFun + "}\n";
   }
 }
 
