@@ -16,8 +16,8 @@ class Main{
   public String toString() {
     String bodyMain = "function main(){\n";
     
-    for (Variable var : this.vars) {
-      bodyMain = bodyMain.concat("let " + var.toString() + ";\n");
+    for (VarDecl var : this.vars) {
+      bodyMain = bodyMain.concat(var.toString());
     }
 
     for (Command command : this.commands) {
@@ -33,18 +33,20 @@ class Main{
 }
 
 class FunctionDecl{
+  String name;
   ArrayList<Command> commands;
   ArrayList<VarDecl> vars;
   ArrayList<Parameter> parameters;
 
-  FunctionDecl(ArrayList<Command> commands, ArrayList<VarDecl> vars, ArrayList<Parameter> parameters){
+  FunctionDecl(String name, ArrayList<Command> commands, ArrayList<VarDecl> vars, ArrayList<Parameter> parameters){
+    this.name = name;
     this.commands = commands;
     this.vars = vars;
     this.parameters = parameters;
   }
 
   public String toString() {
-    String bodyFun = "function " + this.nome + "(";
+    String bodyFun = "function " + this.name + "(";
 
     if (!this.parameters.isEmpty()) {
       
@@ -58,8 +60,8 @@ class FunctionDecl{
 
     bodyFun = bodyFun.concat(") {\n");
 
-    for (Variable var : this.vars) {
-      bodyFun = bodyFun.concat("let " + var.toString() + ";\n");
+    for (VarDecl var : this.vars) {
+      bodyFun = bodyFun.concat(var.toString());
     }
 
     for (Command command : this.commands) {
@@ -82,6 +84,10 @@ class VarDecl {
     this.typo = typo;
     this.id = id;
   }
+
+  public String toString(){
+    return "".concat("let " + this.id + ";\n");
+  }
 }
 
 class Parameter {
@@ -91,6 +97,9 @@ class Parameter {
   Parameter(String typo, String id){
     this.typo = typo;
     this.id = id;
+  }
+    public String toString(){
+    return typo.concat(" " + this.id);
   }
 }
 
@@ -389,28 +398,35 @@ void MainFunc():
 
 void Func(ArrayList<FunctionDecl> functions):
 {
+  String name = "";
   ArrayList<VarDecl> vars = new ArrayList<VarDecl>(); 
   ArrayList<Command> commands = new ArrayList<Command>();
   ArrayList<Parameter> parameters = new ArrayList<Parameter>();
 }
 {
-  <FUNC> Type() <ID> <APAR> (ArgList(parameters))? <FPAR> <ACHAVES>
+  <FUNC> Type() name=<ID> <APAR> (ArgList(parameters))? <FPAR> <ACHAVES>
   VarDecl(vars)
   (c=Statement() {commands.add(c);})*
   <FCHAVES>
-  {functions.add(new FunctionDecl(commands,vars,parameters));}
+  {functions.add(new FunctionDecl(name,commands,vars,parameters));}
 }
 
 void ArgList(ArrayList<Parameter> parameters):
-{}
 {
-  t=Type() id=<ID> {parameters.add(new Parameter(t, id.image));} (ArgListRecursion(parameters))*
+  Token id=null;
+  String typo=null;
+}
+{
+  typo=Type() id=<ID> {parameters.add(new Parameter(typo, id.image));} (ArgListRecursion(parameters))*
 }
 
 void ArgListRecursion(ArrayList<Parameter> parameters):
-{}
 {
-  <COMM> t=Type() id=<ID> {parameters.add(new Parameter(t, id.image));} ArgListRecursion(parameters)
+  Token id=null;
+  String typo=null;
+}
+{
+  <COMM> typo=Type() id=<ID> {parameters.add(new Parameter(typo, id.image));} ArgListRecursion(parameters)
 }
 
 void VarDecl(ArrayList<VarDecl> vars):
@@ -440,67 +456,84 @@ void Statement(ArrayList<Command> commands):
 }
 
 void Assignment(ArrayList<Command> commands):
-{}
 {
-  id=<ID> <ATRIB> e=Expression() {commands.add(new Atrib(id,e));} 
+  Token id = null;
+  Expression exp = null;
+}
+{
+  id=<ID> <ATRIB> exp=Expression() {commands.add(new Atrib(id.image,exp));} 
 }
 
 void PrintStatement(ArrayList<Command> commands):
-{}
 {
-  <SYSOUT> <APAR> e=Expression() {commands.add(new PrintStatement(e));} <FPAR>
+  Expression exp = null;
+}
+{
+  <SYSOUT> <APAR> exp=Expression() {commands.add(new PrintStatement(exp));} <FPAR>
 }
 
 void IfStatement(ArrayList<Command> commands):
 {
   ArrayList<Command> insideCommands = new ArrayList<Command>();
+  Expression exp = null;
 }
 {
-  <IF> <APAR> e=Expression() <FPAR> <ACHAVES>
+  <IF> <APAR> exp=Expression() <FPAR> <ACHAVES>
   (Statement(insideCommands))+
   <FCHAVES>
-  {commands.add(new IfStatement(e, insideCommands));}
+  {commands.add(new IfStatement(exp, insideCommands));}
 }
 
 void WhileStatement(ArrayList<Command> commands):
 {
   ArrayList<Command> insideCommands = new ArrayList<Command>();
+  Expression exp = null;
 }
 {
-  <WHILE> <APAR> e=Expression() <FPAR> <ACHAVES>
+  <WHILE> <APAR> exp=Expression() <FPAR> <ACHAVES>
   (Statement(insideCommands))+
   <FCHAVES>
-  {commands.add(new WhileStatement(e, insideCommands));}
+  {commands.add(new WhileStatement(exp, insideCommands));}
 }
 
 void RepeatStatement(ArrayList<Command> commands):
 {
   ArrayList<Command> insideCommands = new ArrayList<Command>();
+  Expression exp = null;
 }
 {
   <REPEAT> <ACHAVES>
   (Statement(insideCommands))+
-  <FCHAVES> <UNTIL> <APAR> e=Expression() <FPAR>
-  {commands.add(new RepeatStatement(e, insideCommands));}
+  <FCHAVES> <UNTIL> <APAR> exp=Expression() <FPAR>
+  {commands.add(new RepeatStatement(exp, insideCommands));}
 }
 
 void ReturnStatement(ArrayList<Command> commands):
-{}
 {
-  <RETURN> e=Expression()
-  {commands.add(new ReturnStatement(e));}
+  Expression exp;
+}
+{
+  <RETURN> exp=Expression()
+  {commands.add(new ReturnStatement(exp));}
 }
 
 void Expression():
-{}
+{
+  Expression left;
+  Expression right;
+  Expression exp;
+  Operator op;
+}
 {
   left=PrimaryExpr() op=Op() right=PrimaryExpr() {return new Operation(op, left, right);}
-| <APAR> e=Expression() {return e;} <FPAR>
-| factor=PrimaryExpr() {return factor;}
+| <APAR> exp=Expression() {return exp;} <FPAR>
+| exp=PrimaryExpr() {return exp;}
 }
 
 void PrimaryExpr():
-{}
+{
+  Token num = null;
+}
 {
   num=<NUM> {return new IntFactor(num.image);} 
 | <TRUE> {return new BooleanFactor("true");} 
