@@ -1,12 +1,14 @@
 PARSER_BEGIN(KarloffParser)
 import java.io.*;
+import java.util.ArrayList;
+
 
 class Main{
 
   ArrayList<Command> commands;
-  ArrayList<DeclVar> vars;
+  ArrayList<VarDecl> vars;
 
-  Main(ArrayList<Command> commands, ArrayList<DeclVar> declVars){
+  Main(ArrayList<Command> commands, ArrayList<VarDecl> vars){
     this.commands = commands;
     this.vars = vars;
   }
@@ -41,7 +43,7 @@ class Atrib extends Command {
 class PrintStatement extends Command {
   Exp exp;
 
-  Print(Exp exp){
+  PrintStatement(Exp exp){
     this.exp = exp;
   }
 }
@@ -50,9 +52,9 @@ class IfStatement extends Command {
   Exp exp;
   ArrayList<Command> commands;
 
-  IfStatement(Exp exp, ArrayList<Command> command){
+  IfStatement(Exp exp, ArrayList<Command> commands){
     this.exp = exp;
-    this.command = command;
+    this.commands = commands;
   }
 }
 
@@ -60,9 +62,9 @@ class WhileStatement extends Command {
   Exp exp;
   ArrayList<Command> commands;
 
-  WhileStatement(Exp exp, ArrayList<Command> command){
+  WhileStatement(Exp exp, ArrayList<Command> commands){
     this.exp = exp;
-    this.command = command;
+    this.commands = commands;
   }
 }
 
@@ -71,9 +73,9 @@ class RepeatStatement extends Command {
   Exp exp;
   ArrayList<Command> commands;
 
-  RepeatStatement(Exp exp, ArrayList<Command> command){
+  RepeatStatement(Exp exp, ArrayList<Command> commands){
     this.exp = exp;
-    this.command = command;
+    this.commands = commands;
   }
 }
 
@@ -187,6 +189,19 @@ class KarloffTree {
     this.main = main;
     this.functions = functions;
   }
+
+  public String toString() {
+    String body = "";
+    body = body.concat(this.main.toString() + "\n");
+    
+    for (Funcao funcao : this.funcoes) {
+      body = body.concat(funcao.toString() + "\n");
+    }
+
+    body = body + "main();\n";
+    
+    return body;
+  }
 }
 
 public class KarloffParser {
@@ -194,7 +209,6 @@ public class KarloffParser {
   public static void main(String args[]) throws ParseException, IOException {
     KarloffParser parser = new KarloffParser(new FileInputStream(args[0]));
     KarloffTree tree = parser.Karloff();
-    print(tree);
   }
 
 }
@@ -336,28 +350,36 @@ void PrintStatement(ArrayList<Command> commands):
 }
 
 void IfStatement(ArrayList<Command> commands):
-{}
 {
-  <IF> <APAR> e=Expression() {commands.add(new PrintStatement(e));} <FPAR> <ACHAVES>
-  (Statement())+
+  ArrayList<Command> insideCommands = new ArrayList<Command>();
+}
+{
+  <IF> <APAR> e=Expression() <FPAR> <ACHAVES>
+  (Statement(insideCommands))+
   <FCHAVES>
+  {commands.add(new IfStatement(e, insideCommands));}
 }
 
 void WhileStatement(ArrayList<Command> commands):
-{}
 {
-  <WHILE> <APAR> e=Expression() {commands.add(new PrintStatement(e));} <FPAR> <ACHAVES>
-  (Statement())+
+  ArrayList<Command> insideCommands = new ArrayList<Command>();
+}
+{
+  <WHILE> <APAR> e=Expression() <FPAR> <ACHAVES>
+  (Statement(insideCommands))+
   <FCHAVES>
+  {commands.add(new WhileStatement(e, insideCommands));}
 }
 
-// TODO: TIRAR DUVIDA DE COMO FAZER ESSE
 void RepeatStatement():
-{}
+{
+    ArrayList<Command> insideCommands = new ArrayList<Command>();
+}
 {
   <REPEAT> <ACHAVES>
-  (Statement())+
-  <FCHAVES> <UNTIL> <APAR> Expression() <FPAR>
+  (Statement(insideCommands))+
+  <FCHAVES> <UNTIL> <APAR> e=Expression() <FPAR>
+  {commands.add(new RepeatStatement(e, insideCommands));}
 }
 
 void ReturnStatement():
