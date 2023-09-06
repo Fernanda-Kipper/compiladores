@@ -107,9 +107,9 @@ class Command {}
 
 class Atrib extends Command {
   Token id;
-  Exp exp;
+  Expression exp;
 
-  Atrib(Token id, Exp exp){
+  Atrib(Token id, Expression exp){
     this.id = id;
     this.exp = exp;
   }
@@ -120,55 +120,85 @@ class Atrib extends Command {
 }
 
 class PrintStatement extends Command {
-  Exp exp;
+  Expression exp;
 
-  PrintStatement(Exp exp){
+  PrintStatement(Expression exp){
     this.exp = exp;
   }
 }
 
 class IfStatement extends Command {
-  Exp exp;
+  Expression exp;
   ArrayList<Command> commands;
 
-  IfStatement(Exp exp, ArrayList<Command> commands){
+  IfStatement(Expression exp, ArrayList<Command> commands){
     this.exp = exp;
     this.commands = commands;
   }
 }
 
 class WhileStatement extends Command {
-  Exp exp;
+  Expression exp;
   ArrayList<Command> commands;
 
-  WhileStatement(Exp exp, ArrayList<Command> commands){
+  WhileStatement(Expression exp, ArrayList<Command> commands){
     this.exp = exp;
     this.commands = commands;
+  }
+
+  public String toString() {
+    String whileBody = "while (!(" + this.exp.toString() + ")){\n";
+    
+    for (Command command : this.commands) {
+      whileBody = whileBody.concat(command.toString());
+    }
+
+    if (!whileBody.endsWith("\n")){
+      whileBody = whileBody + "\n";
+    }
+
+    return whileBody + "}\n";
   }
 }
 
 
 class RepeatStatement extends Command {
-  Exp exp;
+  Expression exp;
   ArrayList<Command> commands;
 
-  RepeatStatement(Exp exp, ArrayList<Command> commands){
+  RepeatStatement(Expression exp, ArrayList<Command> commands){
     this.exp = exp;
     this.commands = commands;
+  }
+
+  public String toString() {
+    String bodyRepeat = "repeat { \n";
+    
+    for (Command command : this.commands) {
+      bodyRepeat = bodyRepeat.concat(command.toString());
+    }
+
+    bodyRepeat = bodyRepeat + "}\n";
+    bodyRepeat = bodyRepeat + "until";
+    bodyRepeat = bodyRepeat + "(!(" + this.exp.toString() + "))\n";
+
+    return bodyRepeat;
   }
 }
 
 class ReturnStatement extends Command {
-  Exp exp;
+  Expression exp;
 
-  ReturnStatement(Exp exp){
+  ReturnStatement(Expression exp){
     this.exp = exp;
+  }
+
+  public String toString() {
+    return "return " + this.exp.toString() + ";\n";
   }
 }
 
-class Factor {}
-
-class BooleanFactor extends Factor {
+class BooleanFactor extends Expression {
   String value;
 
   BooleanFactor(String value){
@@ -180,7 +210,7 @@ class BooleanFactor extends Factor {
   }
 }
 
-class IntFactor extends Factor {
+class IntFactor extends Expression {
   String value;
 
   IntFactor(String value){
@@ -298,8 +328,8 @@ class KarloffTree {
     String body = "";
     body = body.concat(this.main.toString() + "\n");
     
-    for (Funcao funcao : this.funcoes) {
-      body = body.concat(funcao.toString() + "\n");
+    for (FunctionDecl fn : this.functions) {
+      body = body.concat(fn.toString() + "\n");
     }
 
     body = body + "main();\n";
