@@ -14,11 +14,33 @@ class Main{
   }
 }
 
+class FunctionDecl{
+  ArrayList<Command> commands;
+  ArrayList<VarDecl> vars;
+  ArrayList<Parameter> parameters;
+
+  FunctionDecl(ArrayList<Command> commands, ArrayList<VarDecl> vars, ArrayList<Parameter> parameters){
+    this.commands = commands;
+    this.vars = vars;
+    this.parameters = parameters;
+  }
+}
+
 class VarDecl {
   String typo;
-  Token id;
+  String id;
 
-  VarDecl(String typo, Token id){
+  VarDecl(String typo, String id){
+    this.typo = typo;
+    this.id = id;
+  }
+}
+
+class Parameter {
+  String typo;
+  String id;
+
+  Parameter(String typo, String id){
     this.typo = typo;
     this.id = id;
   }
@@ -68,7 +90,7 @@ class WhileStatement extends Command {
   }
 }
 
-//TODO: PERGUNTAR SE É ASSIM
+
 class RepeatStatement extends Command {
   Exp exp;
   ArrayList<Command> commands;
@@ -87,21 +109,29 @@ class ReturnStatement extends Command {
   }
 }
 
-class Exp {}
+class Factor {}
 
-class BooleanExp extends Exp {
-  boolean value;
+class BooleanFactor extends Factor {
+  String value;
 
-  BooleanExp(boolean value){
+  BooleanFactor(String value){
     this.value = value;
+  }
+
+  public String toString() {
+    return this.value;
   }
 }
 
-class IntExp extends Exp {
-  int value;
+class IntFactor extends Factor {
+  String value;
 
-  IntExp(int value){
+  IntFactor(String value){
     this.value = value;
+  }
+
+  public String toString() {
+    return this.value;
   }
 }
 
@@ -179,13 +209,30 @@ class Compare extends Operator {
   }
 }
 
+class Expression {}
+
+class Operation extends Expression {
+  Operator operator;
+  Expression left, right;
+
+  Operation(Operator operator, Expression left, Expression right){
+    this.operator = operator;
+    this.left = left;
+    this.right = right;
+  }
+
+  public String toString() {
+    return this.left.toString() + " " + this.operator.toString() + " " + this.right.toString(); 
+  }
+}
+
 
 class KarloffTree {
 
   Main main;
-  ArrayList<Func> functions;
+  ArrayList<FunctionDecl> functions;
 
-  KarloffTree(Main main, ArrayList<Func> functions){
+  KarloffTree(Main main, ArrayList<FunctionDecl> functions){
     this.main = main;
     this.functions = functions;
   }
@@ -269,13 +316,13 @@ TOKEN:
 void Karloff():
 {
   Main main = null;  
-  ArrayList<Func> func = new ArrayList<Func>();
+  ArrayList<FunctionDecl> functions = new ArrayList<FunctionDecl>();
 }
 {
   main = MainFunc()
-  (Func(func))*
+  (Func(functions))*
 
-  {return new KarloffTree(main,func);}
+  {return new KarloffTree(main,functions);}
 }
 
 void MainFunc():
@@ -292,25 +339,30 @@ void MainFunc():
   {return new Main(vars,commands);}
 }
 
-void Func():
-{}
+void Func(ArrayList<FunctionDecl> functions):
 {
-  <FUNC> Type() <ID> <APAR> (ArgList())? <FPAR> <ACHAVES>
-  VarDecl()
-  (Statement())*
+  ArrayList<VarDecl> vars = new ArrayList<VarDecl>(); 
+  ArrayList<Command> commands = new ArrayList<Command>();
+  ArrayList<Parameter> parameters = new ArrayList<Parameter>();
+}
+{
+  <FUNC> Type() <ID> <APAR> (ArgList(parameters))? <FPAR> <ACHAVES>
+  VarDecl(vars)
+  (c=Statement() {commands.add(c);})*
   <FCHAVES>
+  {functions.add(new FunctionDecl(commands,vars,parameters));}
 }
 
-void ArgList():
+void ArgList(ArrayList<Parameter> parameters):
 {}
 {
-  Type() <ID> (ArgListRecursion())*
+  t=Type() id=<ID> {parameters.add(new Parameter(t, id.image));} (ArgListRecursion(parameters))*
 }
 
-void ArgListRecursion():
+void ArgListRecursion(ArrayList<Parameter> parameters):
 {}
 {
-  <COMM> Type() <ID> ArgListRecursion()
+  <COMM> t=Type() id=<ID> {parameters.add(new Parameter(t, id.image));} ArgListRecursion(parameters)
 }
 
 void VarDecl(ArrayList<VarDecl> vars):
@@ -323,11 +375,13 @@ void VarDecl(ArrayList<VarDecl> vars):
 }
 
 String Type():
-{Token tipo = null;}
 {
-  tipo=<INT> | tipo=<BOOL> | tipo=<VOID>
+  Token typo = null;
+}
+{
+  typo=<INT> | typo=<BOOL> | typo=<VOID>
 
-  {return tipo.image;}
+  {return typo.image;}
 }
 
 void Statement(ArrayList<Command> commands):
@@ -371,9 +425,9 @@ void WhileStatement(ArrayList<Command> commands):
   {commands.add(new WhileStatement(e, insideCommands));}
 }
 
-void RepeatStatement():
+void RepeatStatement(ArrayList<Command> commands):
 {
-    ArrayList<Command> insideCommands = new ArrayList<Command>();
+  ArrayList<Command> insideCommands = new ArrayList<Command>();
 }
 {
   <REPEAT> <ACHAVES>
@@ -382,62 +436,39 @@ void RepeatStatement():
   {commands.add(new RepeatStatement(e, insideCommands));}
 }
 
-void ReturnStatement():
+void ReturnStatement(ArrayList<Command> commands):
 {}
 {
-  <RETURN> Expression()
-}
-
-void RelExpr():
-{}
-{
-  AddExpr() (
-    <EQUALS> AddExpr()
-    | <MINOR> AddExpr()
-    | <MINOR_EQ> AddExpr()
-    | <MAJOR> AddExpr()
-    | <MAJOR_EQ> AddExpr()
-  )?
-}
-
-void AddExpr():
-{}
-{
-  MulExpr() (<PLUS> MulExpr())*
-}
-
-void MulExpr():
-{}
-{
-  UnaryExpr() (<MUL> UnaryExpr())*
-}
-
-void UnaryExpr():
-{}
-{
-  (<PLUS> | <MINUS>) UnaryExpr() | PrimaryExpr()
+  <RETURN> e=Expression()
+  {commands.add(new ReturnStatement(e));}
 }
 
 void Expression():
 {}
 {
-  OrExpr()
-}
-
-void OrExpr():
-{}
-{
-  AndExpr() (<OR> AndExpr())*
-}
-
-void AndExpr():
-{}
-{
-  RelExpr() (<AND> RelExpr())*
+  left=PrimaryExpr() op=Op() right=PrimaryExpr() {return new Operation(op, left, right);}
+| <APAR> e=Expression() {return e;} <FPAR>
+| factor=PrimaryExpr() {return factor;}
 }
 
 void PrimaryExpr():
 {}
 {
-  <NUM> | <ID> | <TRUE> | <FALSE> | <APAR> Expression() <FPAR>
+  num=<NUM> {return new IntFactor(num.image);} 
+| <TRUE> {return new BooleanFactor("true");} 
+| <FALSE> {return new BooleanFactor("false");}
+}
+
+void Op() :
+{}
+{
+  <PLUS> {return new Sum();}
+|   <MINUS> {return new Sub();}
+|   <MUL> {return new Mult();}
+|   <DIV> {return new Div();}
+|   <AND> {return new And();}
+|   <OR> {return new Or();}
+|   <MAJOR> {return new Bigger();}
+|   <MINOR> {return new Smaller();}
+|   <EQUALS> {return new Compare();}
 }
