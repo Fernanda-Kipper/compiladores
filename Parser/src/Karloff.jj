@@ -106,10 +106,10 @@ class Parameter {
 class Command {}
 
 class Atrib extends Command {
-  Token id;
+  String id;
   Expression exp;
 
-  Atrib(Token id, Expression exp){
+  Atrib(String id, Expression exp){
     this.id = id;
     this.exp = exp;
   }
@@ -125,6 +125,10 @@ class PrintStatement extends Command {
   PrintStatement(Expression exp){
     this.exp = exp;
   }
+
+  public String toString() {
+    return "console.log(" + this.exp.toString() + ");\n";
+  }
 }
 
 class IfStatement extends Command {
@@ -134,6 +138,20 @@ class IfStatement extends Command {
   IfStatement(Expression exp, ArrayList<Command> commands){
     this.exp = exp;
     this.commands = commands;
+  }
+
+  public String toString() {
+    String bodyIf = "if (" + this.exp.toString() + "){\n";
+
+    for (Command command : this.commands) {
+      bodyIf = bodyIf.concat(command.toString());
+    }
+
+    if (!bodyIf.endsWith("\n")){
+      bodyIf = bodyIf + "\n";
+    }
+
+    return bodyIf + "}\n";
   }
 }
 
@@ -160,7 +178,6 @@ class WhileStatement extends Command {
     return whileBody + "}\n";
   }
 }
-
 
 class RepeatStatement extends Command {
   Expression exp;
@@ -214,6 +231,18 @@ class IntFactor extends Expression {
   String value;
 
   IntFactor(String value){
+    this.value = value;
+  }
+
+  public String toString() {
+    return this.value;
+  }
+}
+
+class VariableFactor extends Expression {
+  String value;
+
+  VariableFactor(String value){
     this.value = value;
   }
 
@@ -313,7 +342,6 @@ class Operation extends Expression {
   }
 }
 
-
 class KarloffTree {
 
   Main main;
@@ -340,11 +368,21 @@ class KarloffTree {
 
 public class KarloffParser {
 
-  public static void main(String args[]) throws ParseException, IOException {
+  public static void main(String args[]) throws ParseException, IOException, Exception {
     KarloffParser parser = new KarloffParser(new FileInputStream(args[0]));
     KarloffTree tree = parser.Karloff();
+
+    generateCode(tree, "output.txt");
   }
 
+  public static void generateCode(KarloffTree tree, String filename) throws Exception {
+    File file = new File(filename);
+
+    FileOutputStream outputStream = new FileOutputStream(file);
+    outputStream.write(tree.toString().getBytes());
+
+    outputStream.close();
+  }
 }
 
 PARSER_END(KarloffParser)
@@ -400,35 +438,35 @@ TOKEN:
   | <ID: ["a"-"z", "A"-"Z"] (["a"-"z", "A"-"Z", "0"-"9", "_"])*>
 }
 
-void Karloff():
+KarloffTree Karloff():
 {
   Main main = null;  
   ArrayList<FunctionDecl> functions = new ArrayList<FunctionDecl>();
 }
 {
-  main = MainFunc()
+  main=MainFunc()
   (Func(functions))*
 
   {return new KarloffTree(main,functions);}
 }
 
-void MainFunc():
+Main MainFunc():
 {
   ArrayList<VarDecl> vars = new ArrayList<VarDecl>(); 
   ArrayList<Command> commands = new ArrayList<Command>();
 }
 {
-  Type() <MAIN> <APAR> <FPAR> <ACHAVES>
+  <VOID> <MAIN> <APAR> <FPAR> <ACHAVES>
   VarDecl(vars)
-  (c=Statement() {commands.add(c);})*
+  (Statement(commands))*
   <FCHAVES>
 
-  {return new Main(vars,commands);}
+  {return new Main(commands,vars);}
 }
 
 void Func(ArrayList<FunctionDecl> functions):
 {
-  String name = "";
+  Token name = null;
   ArrayList<VarDecl> vars = new ArrayList<VarDecl>(); 
   ArrayList<Command> commands = new ArrayList<Command>();
   ArrayList<Parameter> parameters = new ArrayList<Parameter>();
@@ -436,9 +474,9 @@ void Func(ArrayList<FunctionDecl> functions):
 {
   <FUNC> Type() name=<ID> <APAR> (ArgList(parameters))? <FPAR> <ACHAVES>
   VarDecl(vars)
-  (c=Statement() {commands.add(c);})*
+  (Statement(commands))*
   <FCHAVES>
-  {functions.add(new FunctionDecl(name,commands,vars,parameters));}
+  {functions.add(new FunctionDecl(name.image,commands,vars,parameters));}
 }
 
 void ArgList(ArrayList<Parameter> parameters):
@@ -473,9 +511,9 @@ String Type():
   Token typo = null;
 }
 {
-  typo=<INT> | typo=<BOOL> | typo=<VOID>
-
-  {return typo.image;}
+  typo=<INT> {return typo.image;}
+| typo=<BOOL> {return typo.image;}
+| typo=<VOID> {return typo.image;}
 }
 
 void Statement(ArrayList<Command> commands):
@@ -485,6 +523,9 @@ void Statement(ArrayList<Command> commands):
   <DOTCOMM>
 }
 
+
+// TODO: por fazer o assignment como um comando e nao como um operator, toda vez que chama exp, se tiver assigment de x = 3 - 5, terá que ter um paranteses em volta
+// TODO: então o ideal seria deixar isso como uma operation do tipo left side = right side (e colocar o ID como um tipo factor)
 void Assignment(ArrayList<Command> commands):
 {
   Token id = null;
@@ -508,7 +549,7 @@ void IfStatement(ArrayList<Command> commands):
   Expression exp = null;
 }
 {
-  <IF> <APAR> exp=Expression() <FPAR> <ACHAVES>
+  <IF> exp=Expression() <ACHAVES>
   (Statement(insideCommands))+
   <FCHAVES>
   {commands.add(new IfStatement(exp, insideCommands));}
@@ -520,7 +561,7 @@ void WhileStatement(ArrayList<Command> commands):
   Expression exp = null;
 }
 {
-  <WHILE> <APAR> exp=Expression() <FPAR> <ACHAVES>
+  <WHILE> exp=Expression() <ACHAVES>
   (Statement(insideCommands))+
   <FCHAVES>
   {commands.add(new WhileStatement(exp, insideCommands));}
@@ -534,7 +575,7 @@ void RepeatStatement(ArrayList<Command> commands):
 {
   <REPEAT> <ACHAVES>
   (Statement(insideCommands))+
-  <FCHAVES> <UNTIL> <APAR> exp=Expression() <FPAR>
+  <FCHAVES> <UNTIL> exp=Expression()
   {commands.add(new RepeatStatement(exp, insideCommands));}
 }
 
@@ -547,7 +588,7 @@ void ReturnStatement(ArrayList<Command> commands):
   {commands.add(new ReturnStatement(exp));}
 }
 
-void Expression():
+Expression Expression():
 {
   Expression left;
   Expression right;
@@ -555,22 +596,22 @@ void Expression():
   Operator op;
 }
 {
-  left=PrimaryExpr() op=Op() right=PrimaryExpr() {return new Operation(op, left, right);}
-| <APAR> exp=Expression() {return exp;} <FPAR>
+  (<APAR> left=PrimaryExpr() op=Op() right=PrimaryExpr() <FPAR>) {return new Operation(op, left, right);}
 | exp=PrimaryExpr() {return exp;}
 }
 
-void PrimaryExpr():
+Expression PrimaryExpr():
 {
-  Token num = null;
+  Token token = null;
 }
 {
-  num=<NUM> {return new IntFactor(num.image);} 
+  token=<NUM> {return new IntFactor(token.image);} 
 | <TRUE> {return new BooleanFactor("true");} 
 | <FALSE> {return new BooleanFactor("false");}
+| token=<ID> {return new VariableFactor(token.image);}
 }
 
-void Op() :
+Operator Op() :
 {}
 {
   <PLUS> {return new Sum();}
