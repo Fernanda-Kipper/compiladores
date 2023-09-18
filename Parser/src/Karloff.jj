@@ -99,7 +99,7 @@ class Parameter {
     this.id = id;
   }
     public String toString(){
-    return typo.concat(" " + this.id);
+    return this.id;
   }
 }
 
@@ -197,17 +197,17 @@ class RepeatStatement extends Command {
   }
 
   public String toString() {
-    String bodyRepeat = "repeat { \n";
+    String bodyRepeat = "while (!(" + this.exp.toString() + ")){\n";
     
     for (Command command : this.commands) {
       bodyRepeat = bodyRepeat.concat(command.toString());
     }
 
-    bodyRepeat = bodyRepeat + "}\n";
-    bodyRepeat = bodyRepeat + "until";
-    bodyRepeat = bodyRepeat + "(!(" + this.exp.toString() + "))\n";
+    if (!bodyRepeat.endsWith("\n")){
+      bodyRepeat = bodyRepeat + "\n";
+    }
 
-    return bodyRepeat;
+    return bodyRepeat + "}\n";
   }
 }
 
