@@ -131,6 +131,14 @@ class PrintStatement extends Command {
   }
 }
 
+class ReadStatement extends Expression {
+  ReadStatement(){}
+
+  public String toString() {
+    return "prompt();\n";
+  }
+}
+
 class IfStatement extends Command {
   Expression exp;
   ArrayList<Command> commands;
@@ -372,7 +380,7 @@ public class KarloffParser {
     KarloffParser parser = new KarloffParser(new FileInputStream(args[0]));
     KarloffTree tree = parser.Karloff();
 
-    generateCode(tree, "output.txt");
+    generateCode(tree, "output.js");
   }
 
   public static void generateCode(KarloffTree tree, String filename) throws Exception {
@@ -523,16 +531,22 @@ void Statement(ArrayList<Command> commands):
   <DOTCOMM>
 }
 
-
-// TODO: por fazer o assignment como um comando e nao como um operator, toda vez que chama exp, se tiver assigment de x = 3 - 5, terá que ter um paranteses em volta
-// TODO: então o ideal seria deixar isso como uma operation do tipo left side = right side (e colocar o ID como um tipo factor)
 void Assignment(ArrayList<Command> commands):
 {
   Token id = null;
   Expression exp = null;
 }
 {
-  id=<ID> <ATRIB> exp=Expression() {commands.add(new Atrib(id.image,exp));} 
+  id=<ID> <ATRIB> exp=AssignmentExpression() {commands.add(new Atrib(id.image,exp));}
+}
+
+Expression AssignmentExpression():
+{
+  Expression exp = null;
+}
+{
+  exp=Expression() { return exp; }
+| (<SYSREAD> <APAR> <FPAR>) {return new ReadStatement();}
 }
 
 void PrintStatement(ArrayList<Command> commands):

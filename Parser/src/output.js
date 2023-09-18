@@ -12,7 +12,10 @@ until(!(num > 10))
 
 function double(integer n) {
 let result;
-result = num + num;
+let input;
+input = prompt();
+;
+result = n + input;
 return result;
 }
 
