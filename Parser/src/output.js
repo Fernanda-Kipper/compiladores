@@ -3,14 +3,13 @@ let isGreaterThanTwo;
 let num;
 num = 6;
 isGreaterThanTwo = num > 2;
-repeat { 
+while (!(num > 10)){
 num = num + 1;
 console.log(num);
 }
-until(!(num > 10))
 }
 
-function double(integer n) {
+function double(n) {
 let result;
 let input;
 input = prompt();
